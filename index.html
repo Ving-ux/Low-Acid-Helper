@@ -1,106 +1,11 @@
 <!doctype html>
-<html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <meta name="theme-color" content="#eef7f1" />
-  <meta name="mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-title" content="Low Acid" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <meta name="format-detection" content="telephone=no" />
-  <title>Low-Acid Food Helper</title>
-  <link rel="manifest" href="./manifest.webmanifest" />
-  <link rel="apple-touch-icon" sizes="180x180" href="./icons/apple-touch-icon.png" />
-  <link rel="icon" type="image/png" sizes="192x192" href="./icons/icon-192.png" />
-  <link rel="stylesheet" href="./styles.css" />
-</head>
-<body>
-  <main class="app-shell">
-    <header class="hero">
-      <div>
-        <p class="eyebrow">No API &bull; No account &bull; Works as a simple iPhone applet</p>
-        <h1>Low-Acid Food Helper</h1>
-        <p class="subtitle">Quick LPR-friendly food ideas for lunch, snacks, and grocery-store moments.</p>
-      </div>
-      <button id="installHelp" class="ghost-button" type="button">iPhone setup</button>
-    </header>
-
-    <section class="card warning-card" aria-label="medical disclaimer">
-      <strong>Heads up:</strong> This is practical food guidance, not medical advice. LPR triggers vary by person. Use your clinician’s plan if it differs.
-    </section>
-
-    <section class="card controls-card">
-      <label class="label" for="questionInput">Ask like you would in the store</label>
-      <div class="input-row">
-        <input id="questionInput" autocomplete="off" inputmode="text" placeholder="I’m at Publix. What can I buy for lunch?" />
-        <button id="askButton" type="button">Ask</button>
-      </div>
-
-      <div class="quick-row" aria-label="quick prompts">
-        <button class="chip" data-prompt="I’m at Publix. What can I buy for lunch?">Publix lunch</button>
-        <button class="chip" data-prompt="Give me 5 LPR-friendly snack ideas">Snacks</button>
-        <button class="chip" data-prompt="What about nuts?">Nuts?</button>
-        <button class="chip" data-prompt="What about pretzels?">Pretzels?</button>
-        <button class="chip" data-prompt="What should I avoid today?">Avoid list</button>
-      </div>
-
-      <details class="preferences">
-        <summary>Preferences</summary>
-        <div class="toggle-grid">
-          <label><input type="checkbox" id="strictMode" /> Strict flare-up mode</label>
-          <label><input type="checkbox" id="vegetarianMode" /> Vegetarian ideas</label>
-          <label><input type="checkbox" id="noDairyMode" /> Avoid dairy</label>
-        </div>
-      </details>
-    </section>
-
-    <section id="answerCard" class="card answer-card" aria-live="polite">
-      <div class="answer-header">
-        <h2>Try asking:</h2>
-      </div>
-      <ul class="starter-list">
-        <li>“I’m at Publix. What can I buy?”</li>
-        <li>“What about nuts?”</li>
-        <li>“Give me a boring but safe lunch.”</li>
-        <li>“Is yogurt okay for LPR?”</li>
-      </ul>
-    </section>
-
-    <section class="card ai-card">
-      <h2>Need a follow-up note?</h2>
-      <p>This applet can prepare a clean prompt and copy it to the clipboard. The app itself stays local and never sends it anywhere.</p>
-      <div class="button-row">
-        <button id="copyPromptButton" type="button">Copy follow-up prompt</button>
-      </div>
-      <p id="copyStatus" class="copy-status" role="status"></p>
-    </section>
-
-    <section class="card log-card">
-      <h2>Mini trigger log</h2>
-      <p>Save quick notes locally on this phone. Nothing is uploaded.</p>
-      <div class="input-row log-row">
-        <input id="logInput" placeholder="Example: pretzels were fine, almond butter caused throat burn" />
-        <button id="saveLogButton" type="button">Save</button>
-      </div>
-      <div class="button-row small-buttons">
-        <button id="showLogButton" class="secondary-button" type="button">Show log</button>
-        <button id="clearLogButton" class="danger-button" type="button">Clear</button>
-      </div>
-      <div id="logOutput" class="log-output"></div>
-    </section>
-
-    <section id="setupPanel" class="card setup-card hidden">
-      <h2>iPhone setup</h2>
-      <ol>
-        <li>Publish this repository with GitHub Pages using the included workflow.</li>
-        <li>Open the GitHub Pages link in Safari on the iPhone.</li>
-        <li>Tap <strong>Share</strong> → <strong>Add to Home Screen</strong>.</li>
-        <li>Name it <strong>Low Acid</strong>.</li>
-      </ol>
-      <p>Launch it from the Home Screen for the ful-screen app experience and offline support.</p>
-    </section>
-  </main>
-  <script src="./app.js"></script>
-</body>
-</html>
+<html lang="en"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/><meta name="theme-color" content="#eef7f1"/><meta name="mobile-web-app-capable" content="yes"/><meta name="apple-mobile-web-app-capable" content="yes"/><meta name="apple-mobile-web-app-title" content="Low Acid"/><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/><meta name="format-detection" content="telephone=no"/><title>Low-Acid Food Helper</title><link rel="manifest" href="./manifest.webmanifest"/><link rel="apple-touch-icon" sizes="180x180" href="./icons/apple-touch-icon.png"/><link rel="icon" type="image/png" sizes="192x192" href="./icons/icon-192.png"/><link rel="stylesheet" href="./styles.css"/></head>
+<body><a class="skip-link" href="#mainContent">Skip to main content</a><main id="mainContent" class="app-shell">
+<header class="hero"><div><p class="eyebrow">Private &bull; No account &bull; Works offline</p><h1>Low-Acid Food Helper</h1><p class="subtitle">Clear food ideas, personal notes, and grocery help for reflux-sensitive days.</p></div><button id="installHelp" class="ghost-button compact-button" type="button">iPhone setup</button></header>
+<section class="notice" aria-label="medical disclaimer"><strong>Important:</strong> This is practical guidance, not medical advice or a diagnosis. Triggers vary. Follow your clinician's plan if it differs.</section>
+<section id="decide" class="card section-card" aria-labelledby="decideTitle"><div class="section-heading"><div><p class="section-kicker">Decide</p><h2 id="decideTitle">What do you need right now?</h2></div></div><div id="modeButtons" class="mode-grid" aria-label="suggestion type"><button class="mode-button is-active" type="button" data-mode="meal" aria-pressed="true"><span>Meal</span><small>Breakfast, lunch, or dinner</small></button><button class="mode-button" type="button" data-mode="snack" aria-pressed="false"><span>Snack</span><small>Quick and portable</small></button><button class="mode-button" type="button" data-mode="store" aria-pressed="false"><span>At a store</span><small>Simple grocery combinations</small></button><button class="mode-button" type="button" data-mode="flare" aria-pressed="false"><span>Flare-up</span><small>Extra-simple options</small></button></div><div class="form-grid compact-form"><label>Meal time<select id="mealType"><option value="any">Any time</option><option value="breakfast">Breakfast</option><option value="lunch">Lunch</option><option value="dinner">Dinner</option><option value="snack">Snack</option></select></label></div><details class="preferences"><summary>Food preferences</summary><div class="toggle-grid"><label><input type="checkbox" id="strictMode"/> Extra-gentle suggestions</label><label><input type="checkbox" id="vegetarianMode"/> Vegetarian</label><label><input type="checkbox" id="noDairyMode"/> Dairy-free</label><label><input type="checkbox" id="glutenFreeMode"/> Gluten-free</label><label><input type="checkbox" id="lowerFatMode"/> Lower-fat</label></div></details><button id="suggestButton" class="primary-wide" type="button">Give me an idea</button><div id="suggestionOutput" class="suggestion-panel" aria-live="polite"><p class="empty-state">Choose a mode, then tap <strong>Give me an idea</strong>.</p></div></section>
+<section id="finder" class="card section-card" aria-labelledby="finderTitle"><div class="section-heading"><div><p class="section-kicker">Food finder</p><h2 id="finderTitle">Look up a food</h2></div><span id="foodCount" class="count-pill"></span></div><p class="supporting-text">Search the built-in guide. Labels describe common patterns, not guarantees.</p><div class="finder-controls"><label class="search-label" for="foodSearch">Food name</label><input id="foodSearch" type="search" autocomplete="off" placeholder="Try coffee, oatmeal, tomato..."/><label class="visually-hidden" for="categoryFilter">Food category</label><select id="categoryFilter"><option value="all">All categories</option><option value="fruit">Fruit</option><option value="vegetable">Vegetables</option><option value="grain">Grains</option><option value="protein">Protein</option><option value="dairy">Dairy</option><option value="snack">Snacks</option><option value="drink">Drinks</option><option value="seasoning">Seasonings</option><option value="fat">Higher-fat foods</option><option value="sweet">Sweets</option></select></div><div class="legend" aria-label="food guide labels"><span class="status status-gentle">Commonly gentle</span><span class="status status-individual">Individual</span><span class="status status-trigger">Trigger-prone</span></div><div id="favoriteSummary" class="favorite-summary hidden"></div><div id="foodResults" class="food-results" aria-live="polite"></div><button id="showMoreFoods" class="secondary-button primary-wide hidden" type="button">Show all foods</button></section>
+<section id="journal" class="card section-card" aria-labelledby="journalTitle"><div class="section-heading"><div><p class="section-kicker">Journal</p><h2 id="journalTitle">Track what happened</h2></div></div><p class="supporting-text">Entries stay on this device unless you export them.</p><form id="journalForm" class="form-grid"><label>Food or meal<input id="journalFood" list="foodNames" required placeholder="Example: oatmeal with banana"/></label><datalist id="foodNames"></datalist><label>When<select id="journalMeal"><option value="Breakfast">Breakfast</option><option value="Lunch">Lunch</option><option value="Dinner">Dinner</option><option value="Snack">Snack</option><option value="Drink">Drink</option></select></label><label>Symptom level<select id="journalSeverity"><option value="0">0 - None</option><option value="1">1 - Very mild</option><option value="2">2 - Mild</option><option value="3">3 - Moderate</option><option value="4">4 - Strong</option><option value="5">5 - Severe</option></select></label><label>When symptoms appeared<select id="journalDelay"><option value="No symptoms">No symptoms</option><option value="Within 30 minutes">Within 30 minutes</option><option value="30-90 minutes">30-90 minutes</option><option value="2-4 hours">2-4 hours</option><option value="Later or unsure">Later or unsure</option></select></label><label class="full-field">Notes<textarea id="journalNotes" rows="3" placeholder="Portion, preparation, throat symptoms, or anything else"></textarea></label><button class="primary-wide full-field" type="submit">Save journal entry</button></form><div id="journalSummary" class="journal-summary" aria-live="polite"></div><div id="journalEntries" class="journal-entries"></div><details class="data-tools"><summary>Backup and data tools</summary><p>Export a private backup, a spreadsheet-friendly report, or restore a previous JSON backup.</p><div class="button-row"><button id="exportJsonButton" class="secondary-button" type="button">Export backup</button><button id="exportCsvButton" class="secondary-button" type="button">Export CSV</button><button id="importButton" class="secondary-button" type="button">Restore backup</button><button id="clearDataButton" class="danger-button" type="button">Clear local data</button></div><input id="importFile" class="visually-hidden" type="file" accept="application/json,.json"/><p id="dataStatus" class="status-message" role="status"></p></details></section>
+<section id="settings" class="card section-card" aria-labelledby="settingsTitle"><div class="section-heading"><div><p class="section-kicker">Settings</p><h2 id="settingsTitle">Make it comfortable to read</h2></div></div><div class="form-grid"><label>Text size<select id="textSize"><option value="standard">Standard</option><option value="large">Large</option><option value="xlarge">Extra large</option></select></label><label class="switch-row"><input type="checkbox" id="highContrastMode"/><span>Higher contrast</span></label></div><div class="resource-block"><h3>Optional free web resources</h3><p>These are ordinary links, not app connections. Nothing opens or leaves this app until you tap. External sites have their own privacy policies.</p><div class="resource-list"><a href="https://www.niddk.nih.gov/health-information/digestive-diseases/acid-reflux-ger-gerd-adults/eating-diet-nutrition" target="_blank" rel="noopener noreferrer"><strong>NIH reflux guidance</strong><span>Official eating and trigger information</span></a><a href="https://fdc.nal.usda.gov/" target="_blank" rel="noopener noreferrer"><strong>USDA FoodData Central</strong><span>Free nutrition and ingredient information</span></a><a href="https://www.publix.com/search" target="_blank" rel="noopener noreferrer"><strong>Browse Publix products</strong><span>Check products on the store website</span></a></div></div><div class="button-row"><button id="copyPromptButton" class="secondary-button" type="button">Copy a clinician note</button><button id="shareButton" class="secondary-button" type="button">Share app</button></div><p id="actionStatus" class="status-message" role="status"></p></section>
+<section id="setupPanel" class="card setup-card hidden" aria-labelledby="setupTitle"><h2 id="setupTitle">Add to an iPhone</h2><ol><li>Open this site in Safari.</li><li>Tap <strong>Share</strong>, then <strong>Add to Home Screen</strong>.</li><li>Name it <strong>Low Acid</strong>.</li></ol><p>Launch it from the Home Screen for full-screen use and offline support.</p></section></main>
+<nav class="bottom-nav" aria-label="App sections"><a href="#decide">Decide</a><a href="#finder">Foods</a><a href="#journal">Journal</a><a href="#settings">Settings</a></nav><script src="./food-data.js"></script><script src="./app.js"></script></body></html>
