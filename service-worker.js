@@ -1,8 +1,9 @@
-const CACHE_NAME = "low-acid-helper-v3";
+const CACHE_NAME = "low-acid-helper-v5";
 const ASSETS = [
   "./",
   "./index.html",
   "./styles.css",
+  "./food-data.js",
   "./app.js",
   "./manifest.webmanifest",
   "./icons/apple-touch-icon.png",
