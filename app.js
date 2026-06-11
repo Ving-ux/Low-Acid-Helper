@@ -1,146 +1,53 @@
-const foods = [
-  { keys: ["pretzel"], status: "safe-ish", text: "Plain pretzels are usually a reasonable low-acid snack. Keep the portion modest and drink water.", ideas: ["Plain pretzels", "Pretzels with banana", "Pretzels with low-fat cottage cheese if tolerated"] },
-  { keys: ["nut", "almond", "cashew", "peanut", "walnut"], status: "maybe", text: "Nuts are low-acid but higher in fat, which can trigger reflux. Try a small handful and avoid spicy coatings.", ideas: ["Plain almonds", "A few cashews with oatmeal", "A thin spread of nut butter"] },
-  { keys: ["banana"], status: "safe-ish", text: "Bananas are a common gentle, low-acid choice.", ideas: ["Banana with oatmeal", "Banana with rice cakes", "Banana with low-fat yogurt if tolerated"] },
-  { keys: ["melon", "watermelon", "cantaloupe", "honeydew"], status: "safe-ish", text: "Melons are usually lower-acid and gentle.", ideas: ["Melon cup", "Melon with plain crackers", "Melon with low-fat cottage cheese if tolerated"] },
-  { keys: ["oatmeal", "oats"], status: "safe-ish", text: "Oatmeal is filling, bland, and commonly well tolerated.", ideas: ["Plain oatmeal with banana", "Overnight oats", "Instant plain oats"] },
-  { keys: ["yogurt", "dairy", "milk", "cottage cheese"], status: "maybe", text: "Low-fat dairy works for some people. Start with a small portion and avoid citrus or chocolate flavors.", ideas: ["Plain nonfat yogurt with banana", "Low-fat cottage cheese with melon", "A small portion first"] },
-  { keys: ["coffee", "caffeine", "energy drink"], status: "trigger-prone", text: "Coffee and caffeine commonly worsen reflux.", ideas: ["Water", "Non-mint herbal tea", "A tolerated decaf option"] },
-  { keys: ["soda", "sparkling", "carbonated", "seltzer"], status: "trigger-prone", text: "Carbonation can increase pressure and burping. Flat water is safer during a flare.", ideas: ["Water", "Still electrolyte drink without citrus", "Non-mint herbal tea"] },
-  { keys: ["tomato", "pizza", "marinara", "ketchup", "salsa"], status: "trigger-prone", text: "Tomato-based foods are acidic and commonly trigger LPR.", ideas: ["Plain rice bowl", "Sandwich without tomato", "Plain pasta with a little olive oil"] },
-  { keys: ["orange", "citrus", "lemon", "lime", "grapefruit", "pineapple"], status: "trigger-prone", text: "Citrus and pineapple are acidic and commonly trigger symptoms.", ideas: ["Banana", "Melon", "Applesauce if tolerated"] },
-  { keys: ["chocolate", "mint", "peppermint"], status: "trigger-prone", text: "Chocolate and mint are common reflux triggers.", ideas: ["Banana", "Plain graham crackers", "Vanilla low-fat yogurt if tolerated"] },
-  { keys: ["spicy", "hot sauce", "jalapeno", "pepper", "curry"], status: "trigger-prone", text: "Spicy foods are trigger-prone during an LPR flare.", ideas: ["Mild herbs", "A little salt", "Plain rice or potatoes"] }
-];
-
-const common = {
-  lunch: ["Turkey or chicken sandwich without tomato, onion, spicy mustard, or heavy mayo", "Rice bowl with steamed vegetables and a lean protein", "Baked potato or sweet potato with a light topping", "Oatmeal with banana"],
-  vegetarian: ["Rice bowl with vegetables and chickpeas if tolerated", "Baked potato with low-fat cottage cheese if tolerated", "Oatmeal with banana", "Plain pasta with vegetables"],
-  snacks: ["Banana", "Melon cup", "Plain pretzels", "Rice cakes", "Plain oatmeal", "Plain crackers"],
-  avoid: ["Tomato sauce, salsa, ketchup, and pizza sauce", "Citrus and pineapple", "Spicy or fried foods", "Chocolate and mint", "Coffee, soda, carbonation, and alcohol", "Large meals close to bedtime"]
-};
-
-const $ = id => document.getElementById(id);
-const el = {
-  question: $("questionInput"), answer: $("answerCard"), strict: $("strictMode"),
-  vegetarian: $("vegetarianMode"), noDairy: $("noDairyMode"), copyStatus: $("copyStatus"),
-  logInput: $("logInput"), logOutput: $("logOutput"), setup: $("setupPanel")
-};
-let lastQuestion = "What is a gentle low-acid lunch?";
-let lastAnswer = "";
-
-const escapeHtml = value => String(value).replace(/[&<>"']/g, char => ({
-  "&": "&amp;", "<": "&lt;", ">": "&gt;", "\"": "&quot;", "'": "&#039;"
-})[char]);
-
-function preferences() {
-  return { strict: el.strict.checked, vegetarian: el.vegetarian.checked, noDairy: el.noDairy.checked };
-}
-
-function savePreferences() {
-  localStorage.setItem("lowAcidPrefs", JSON.stringify(preferences()));
-}
-
-function loadPreferences() {
-  try {
-    const saved = JSON.parse(localStorage.getItem("lowAcidPrefs") || "{}");
-    el.strict.checked = Boolean(saved.strict);
-    el.vegetarian.checked = Boolean(saved.vegetarian);
-    el.noDairy.checked = Boolean(saved.noDairy);
-  } catch (_) {}
-}
-
-function filterDairy(items) {
-  return preferences().noDairy
-    ? items.filter(item => !/yogurt|cottage cheese|dairy|milk|cheese/i.test(item))
-    : items;
-}
-
-function render(title, badge, text, items = []) {
-  lastAnswer = `${title}: ${text} ${items.join("; ")}`;
-  el.answer.innerHTML = `
-    <div class="answer-header"><h2>${escapeHtml(title)}</h2><span class="badge">${escapeHtml(badge)}</span></div>
-    <div class="answer-block"><p>${escapeHtml(text)}</p></div>
-    ${items.length ? `<div class="answer-block"><h3>Try these</h3><ul>${items.map(item => `<li>${escapeHtml(item)}</li>`).join("")}</ul></div>` : ""}
-  `;
-}
-
-function answer(question) {
-  const query = question.trim().toLowerCase();
-  lastQuestion = question.trim() || lastQuestion;
-  if (!query) return render("Ask me something first", "ready", "Try a food, snack, lunch, or grocery-store question.");
-
-  const food = foods.find(entry => entry.keys.some(key => query.includes(key)));
-  if (food) {
-    const strictWarning = preferences().strict && food.status === "maybe"
-      ? " Strict flare-up mode is on, so use a gentler default today."
-      : "";
-    return render(`About ${food.keys[0]}`, food.status, food.text + strictWarning, filterDairy(food.ideas));
-  }
-
-  if (/avoid|bad|trigger/.test(query)) return render("Common trigger-prone foods", "avoid", "Individual triggers vary, but these are common.", common.avoid);
-  if (/snack|quick/.test(query)) return render("Snack ideas", preferences().strict ? "strict" : "safe-ish", "Keep portions modest and pair dry foods with water.", filterDairy(common.snacks));
-  if (/publix|store|grocery/.test(query)) {
-    const items = preferences().vegetarian ? common.vegetarian : common.lunch;
-    return render("Grocery-store plan", "store mode", "Choose simple ingredients and mild preparation.", filterDairy(items));
-  }
-  if (/lunch|meal|eat/.test(query)) {
-    const items = preferences().vegetarian ? common.vegetarian : common.lunch;
-    return render("Low-acid lunch ideas", "practical", "Aim for lower-fat, non-spicy, non-tomato choices.", filterDairy(items));
-  }
-  render("Best local guess", "general", "Choose a small, lower-fat, non-spicy meal. Oatmeal, banana, melon, rice, potatoes, plain crackers, pretzels, and mild proteins are common defaults.");
-}
-
-async function copyPrompt() {
-  const prefs = preferences();
-  const prompt = `Low-acid food question: ${lastQuestion}\nPreferences: ${prefs.strict ? "strict flare-up; " : ""}${prefs.vegetarian ? "vegetarian; " : ""}${prefs.noDairy ? "no dairy; " : ""}\nCurrent local guidance: ${lastAnswer || "No answer yet."}`;
-  try {
-    await navigator.clipboard.writeText(prompt);
-    el.copyStatus.textContent = "Copied to the clipboard.";
-  } catch (_) {
-    el.copyStatus.textContent = "Clipboard access was unavailable.";
-  }
-}
-
-function getLog() {
-  try { return JSON.parse(localStorage.getItem("lowAcidLog") || "[]"); }
-  catch (_) { return []; }
-}
-
-function showLog() {
-  const log = getLog();
-  el.logOutput.innerHTML = log.length
-    ? log.map(item => `<div class="log-item"><strong>${escapeHtml(item.date)}</strong><br>${escapeHtml(item.text)}</div>`).join("")
-    : "<p>No trigger notes yet.</p>";
-}
-
-function saveLog() {
-  const text = el.logInput.value.trim();
-  if (!text) return;
-  const log = getLog();
-  log.unshift({ text, date: new Date().toLocaleString() });
-  localStorage.setItem("lowAcidLog", JSON.stringify(log.slice(0, 50)));
-  el.logInput.value = "";
-  showLog();
-}
-
-$("askButton").addEventListener("click", () => answer(el.question.value));
-el.question.addEventListener("keydown", event => { if (event.key === "Enter") answer(el.question.value); });
-document.querySelectorAll(".chip").forEach(button => button.addEventListener("click", () => {
-  el.question.value = button.dataset.prompt;
-  answer(button.dataset.prompt);
-}));
-[el.strict, el.vegetarian, el.noDairy].forEach(input => input.addEventListener("change", savePreferences));
-$("copyPromptButton").addEventListener("click", copyPrompt);
-$("installHelp").addEventListener("click", () => el.setup.classList.toggle("hidden"));
-$("saveLogButton").addEventListener("click", saveLog);
-$("showLogButton").addEventListener("click", showLog);
-$("clearLogButton").addEventListener("click", () => {
-  if (confirm("Clear the local trigger log on this phone?")) {
-    localStorage.removeItem("lowAcidLog");
-    showLog();
-  }
-});
-
-loadPreferences();
-if ("serviceWorker" in navigator) navigator.serviceWorker.register("./service-worker.js").catch(() => {});
+const { foods, mealIdeas, levels } = window.LOW_ACID_DATA;
+const STORAGE_KEY = "lowAcidHelperStateV2";
+const BACKUP_VERSION = 1;
+const defaultState = {mode:"meal",mealType:"any",suggestionIndex:0,preferences:{strict:false,vegetarian:false,dairyFree:false,glutenFree:false,lowerFat:false,textSize:"standard",highContrast:false},favorites:[],ratings:{},journal:[]};
+const $=id=>document.getElementById(id);
+const elements={modeButtons:$("modeButtons"),mealType:$("mealType"),strict:$("strictMode"),vegetarian:$("vegetarianMode"),dairyFree:$("noDairyMode"),glutenFree:$("glutenFreeMode"),lowerFat:$("lowerFatMode"),suggestionOutput:$("suggestionOutput"),foodSearch:$("foodSearch"),categoryFilter:$("categoryFilter"),foodCount:$("foodCount"),foodResults:$("foodResults"),showMoreFoods:$("showMoreFoods"),favoriteSummary:$("favoriteSummary"),journalForm:$("journalForm"),journalFood:$("journalFood"),journalMeal:$("journalMeal"),journalSeverity:$("journalSeverity"),journalDelay:$("journalDelay"),journalNotes:$("journalNotes"),journalSummary:$("journalSummary"),journalEntries:$("journalEntries"),foodNames:$("foodNames"),importFile:$("importFile"),dataStatus:$("dataStatus"),textSize:$("textSize"),highContrast:$("highContrastMode"),actionStatus:$("actionStatus"),setup:$("setupPanel")};
+let state=loadState(),lastSuggestion=null,showAllFoods=false;
+function cloneDefaultState(){return JSON.parse(JSON.stringify(defaultState));}
+function escapeHtml(value){return String(value).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#039;"})[c]);}
+function validDate(value){return typeof value==="string"&&!Number.isNaN(Date.parse(value));}
+function makeId(){return window.crypto&&typeof window.crypto.randomUUID==="function"?window.crypto.randomUUID():`${Date.now()}-${Math.random().toString(16).slice(2)}`;}
+function normalizeState(value){const clean=cloneDefaultState();if(!value||typeof value!=="object")return clean;if(["meal","snack","store","flare"].includes(value.mode))clean.mode=value.mode;if(["any","breakfast","lunch","dinner","snack"].includes(value.mealType))clean.mealType=value.mealType;if(Number.isInteger(value.suggestionIndex))clean.suggestionIndex=value.suggestionIndex;const p=value.preferences||{};clean.preferences.strict=Boolean(p.strict);clean.preferences.vegetarian=Boolean(p.vegetarian);clean.preferences.dairyFree=Boolean(p.dairyFree);clean.preferences.glutenFree=Boolean(p.glutenFree);clean.preferences.lowerFat=Boolean(p.lowerFat);clean.preferences.textSize=["standard","large","xlarge"].includes(p.textSize)?p.textSize:"standard";clean.preferences.highContrast=Boolean(p.highContrast);const ids=new Set(foods.map(f=>f.id));clean.favorites=Array.isArray(value.favorites)?[...new Set(value.favorites.filter(id=>ids.has(id)))].slice(0,100):[];if(value.ratings&&typeof value.ratings==="object")Object.entries(value.ratings).forEach(([id,r])=>{if(ids.has(id)&&["tolerated","avoid"].includes(r))clean.ratings[id]=r;});clean.journal=Array.isArray(value.journal)?value.journal.filter(e=>e&&typeof e.food==="string").slice(0,500).map(e=>({id:String(e.id||makeId()),food:e.food.trim().slice(0,160),meal:String(e.meal||"Meal").slice(0,40),severity:Math.min(5,Math.max(0,Number(e.severity)||0)),delay:String(e.delay||"Later or unsure").slice(0,60),notes:String(e.notes||"").trim().slice(0,1000),createdAt:validDate(e.createdAt)?e.createdAt:new Date().toISOString()})):[];return clean;}
+function loadState(){try{const saved=JSON.parse(localStorage.getItem(STORAGE_KEY)||"null");if(saved)return normalizeState(saved);}catch(_){}const migrated=cloneDefaultState();try{const old=JSON.parse(localStorage.getItem("lowAcidPrefs")||"{}");migrated.preferences.strict=Boolean(old.strict);migrated.preferences.vegetarian=Boolean(old.vegetarian);migrated.preferences.dairyFree=Boolean(old.noDairy);const log=JSON.parse(localStorage.getItem("lowAcidLog")||"[]");if(Array.isArray(log))migrated.journal=log.slice(0,50).map(e=>({id:makeId(),food:"Imported note",meal:"Note",severity:0,delay:"Later or unsure",notes:String(e.text||"").slice(0,1000),createdAt:validDate(e.date)?new Date(e.date).toISOString():new Date().toISOString()}));}catch(_){}return migrated;}
+function saveState(){localStorage.setItem(STORAGE_KEY,JSON.stringify(state));}
+function applyReadingSettings(){document.body.dataset.textSize=state.preferences.textSize;document.body.dataset.highContrast=String(state.preferences.highContrast);}
+function syncControls(){elements.mealType.value=state.mealType;elements.strict.checked=state.preferences.strict;elements.vegetarian.checked=state.preferences.vegetarian;elements.dairyFree.checked=state.preferences.dairyFree;elements.glutenFree.checked=state.preferences.glutenFree;elements.lowerFat.checked=state.preferences.lowerFat;elements.textSize.value=state.preferences.textSize;elements.highContrast.checked=state.preferences.highContrast;elements.modeButtons.querySelectorAll("[data-mode]").forEach(b=>{const selected=b.dataset.mode===state.mode;b.classList.toggle("is-active",selected);b.setAttribute("aria-pressed",String(selected));});applyReadingSettings();}
+function updatePreferences(){state.preferences.strict=elements.strict.checked;state.preferences.vegetarian=elements.vegetarian.checked;state.preferences.dairyFree=elements.dairyFree.checked;state.preferences.glutenFree=elements.glutenFree.checked;state.preferences.lowerFat=elements.lowerFat.checked;saveState();}
+function matchingIdeas(){const strict=state.preferences.strict||state.mode==="flare";return mealIdeas.filter(i=>i.modes.includes(state.mode)&&(state.mealType==="any"||i.mealTypes.includes(state.mealType))&&(!state.preferences.vegetarian||i.vegetarian)&&(!state.preferences.dairyFree||i.dairyFree)&&(!state.preferences.glutenFree||i.glutenFree)&&(!state.preferences.lowerFat||i.lowerFat)&&(!strict||i.strictFriendly));}
+function suggestIdea(){let matches=matchingIdeas(),relaxed=false;if(!matches.length&&state.mealType!=="any"){const original=state.mealType;state.mealType="any";matches=matchingIdeas();state.mealType=original;relaxed=matches.length>0;}if(!matches.length){elements.suggestionOutput.innerHTML='<div class="suggestion-card"><h3>No exact match yet</h3><p>Try turning off one preference or choosing another mode. Personal tolerance matters more than a perfect filter match.</p></div>';lastSuggestion=null;return;}const selected=matches[state.suggestionIndex%matches.length];state.suggestionIndex+=1;lastSuggestion=selected;saveState();const active=[(state.preferences.strict||state.mode==="flare")&&"extra-gentle",state.preferences.vegetarian&&"vegetarian",state.preferences.dairyFree&&"dairy-free",state.preferences.glutenFree&&"gluten-free",state.preferences.lowerFat&&"lower-fat"].filter(Boolean);elements.suggestionOutput.innerHTML=`<article class="suggestion-card"><h3>${escapeHtml(selected.name)}</h3><p>${escapeHtml(selected.description)}</p><ul>${selected.items.map(x=>`<li>${escapeHtml(x)}</li>`).join("")}</ul>${active.length?`<p class="preference-line">Matched: ${escapeHtml(active.join(", "))}</p>`:""}${relaxed?'<p class="preference-line">No exact time match was available, so this is an all-day option.</p>':""}</article>`;}
+function statusClass(level){return `status status-${level}`;}
+function renderFavorites(){const list=state.favorites.map(id=>foods.find(f=>f.id===id)).filter(Boolean);if(!list.length){elements.favoriteSummary.classList.add("hidden");elements.favoriteSummary.innerHTML="";return;}elements.favoriteSummary.classList.remove("hidden");elements.favoriteSummary.innerHTML=`<strong>Favorites</strong><div class="favorite-links">${list.map(f=>`<button type="button" data-favorite-search="${escapeHtml(f.id)}">${escapeHtml(f.name)}</button>`).join("")}</div>`;}
+function renderFoodResults(){const query=elements.foodSearch.value.trim().toLowerCase(),category=elements.categoryFilter.value;let results=foods.filter(f=>{const text=`${f.name} ${f.summary} ${f.ideas.join(" ")}`.toLowerCase();return(!query||text.includes(query))&&(category==="all"||f.category===category);});results.sort((a,b)=>{const an=a.name.toLowerCase(),bn=b.name.toLowerCase();const relevance=Number(bn===query)-Number(an===query)||Number(bn.startsWith(query))-Number(an.startsWith(query));const favorite=Number(state.favorites.includes(b.id))-Number(state.favorites.includes(a.id));return relevance||favorite||a.name.localeCompare(b.name);});elements.foodCount.textContent=`${results.length} ${results.length===1?"food":"foods"}`;if(!results.length){elements.foodResults.innerHTML='<p class="empty-state">No built-in match. You can still record the food in your journal.</p>';elements.showMoreFoods.classList.add("hidden");renderFavorites();return;}const filtered=Boolean(query)||category!=="all";const visible=filtered||showAllFoods?results:results.slice(0,8);elements.showMoreFoods.classList.toggle("hidden",filtered||showAllFoods||results.length<=8);elements.showMoreFoods.textContent=`Show all ${results.length} foods`;elements.foodResults.innerHTML=visible.map(f=>{const level=levels[f.level],favorite=state.favorites.includes(f.id),rating=state.ratings[f.id],personal=rating==="tolerated"?"Your note: this has worked for you.":rating==="avoid"?"Your note: you prefer to avoid this.":"";return `<article class="food-card"><div class="food-card-header"><h3>${escapeHtml(f.name)}</h3><span class="${statusClass(f.level)}">${escapeHtml(level.label)}</span></div><p>${escapeHtml(f.summary)}</p><ul>${f.ideas.map(x=>`<li>${escapeHtml(x)}</li>`).join("")}</ul>${personal?`<p class="personal-label">${escapeHtml(personal)}</p>`:""}<div class="food-actions" aria-label="Personal settings for ${escapeHtml(f.name)}"><button type="button" data-action="favorite" data-food-id="${f.id}" aria-pressed="${favorite}">${favorite?"Favorited":"Favorite"}</button><button type="button" data-action="tolerated" data-food-id="${f.id}" aria-pressed="${rating==="tolerated"}">Works for me</button><button type="button" data-action="avoid" data-food-id="${f.id}" aria-pressed="${rating==="avoid"}">Avoid for me</button></div></article>`;}).join("");renderFavorites();}
+function updateFoodPreference(id,action){if(action==="favorite")state.favorites=state.favorites.includes(id)?state.favorites.filter(x=>x!==id):[...state.favorites,id];else if(["tolerated","avoid"].includes(action)){state.ratings[id]=state.ratings[id]===action?undefined:action;if(!state.ratings[id])delete state.ratings[id];}saveState();renderFoodResults();}
+function addJournalEntry(event){event.preventDefault();const food=elements.journalFood.value.trim();if(!food)return;state.journal.unshift({id:makeId(),food:food.slice(0,160),meal:elements.journalMeal.value,severity:Number(elements.journalSeverity.value),delay:elements.journalDelay.value,notes:elements.journalNotes.value.trim().slice(0,1000),createdAt:new Date().toISOString()});state.journal=state.journal.slice(0,500);saveState();elements.journalForm.reset();renderJournal();elements.journalFood.focus();}
+function severityClass(s){return s<=1?"severity severity-low":s<=3?"severity severity-mid":"severity severity-high";}
+function formatDate(v){return new Intl.DateTimeFormat(undefined,{dateStyle:"medium",timeStyle:"short"}).format(new Date(v));}
+function renderJournal(){const entries=state.journal;if(!entries.length){elements.journalSummary.innerHTML="";elements.journalEntries.innerHTML='<p class="empty-state">No journal entries yet.</p>';return;}const average=entries.reduce((sum,e)=>sum+e.severity,0)/entries.length,gentle=entries.filter(e=>e.severity<=1).length,recent=entries.filter(e=>Date.now()-Date.parse(e.createdAt)<6048e5).length;elements.journalSummary.innerHTML=`<div class="summary-grid" aria-label="journal summary"><div class="summary-item"><strong>${entries.length}</strong><span>Total entries</span></div><div class="summary-item"><strong>${gentle}</strong><span>None or mild</span></div><div class="summary-item"><strong>${recent}</strong><span>Past 7 days</span></div></div><p class="supporting-text">Average recorded symptom level: ${average.toFixed(1)} out of 5. This is a pattern summary, not proof that a food caused symptoms.</p>`;elements.journalEntries.innerHTML=entries.slice(0,30).map(e=>`<article class="journal-entry"><div class="entry-header"><div><h3>${escapeHtml(e.food)}</h3><p class="entry-meta">${escapeHtml(e.meal)} &bull; ${escapeHtml(formatDate(e.createdAt))}</p></div><span class="${severityClass(e.severity)}">Level ${e.severity}</span></div><p><strong>Timing:</strong> ${escapeHtml(e.delay)}</p>${e.notes?`<p>${escapeHtml(e.notes)}</p>`:""}<button class="entry-delete" type="button" data-delete-entry="${escapeHtml(e.id)}">Delete entry</button></article>`).join("");}
+function deleteJournalEntry(id){state.journal=state.journal.filter(e=>e.id!==id);saveState();renderJournal();}
+function downloadFile(name,content,type){const blob=new Blob([content],{type}),url=URL.createObjectURL(blob),link=document.createElement("a");link.href=url;link.download=name;document.body.appendChild(link);link.click();link.remove();URL.revokeObjectURL(url);}
+function exportBackup(){const backup={app:"Low-Acid Food Helper",version:BACKUP_VERSION,exportedAt:new Date().toISOString(),state};downloadFile(`low-acid-helper-backup-${new Date().toISOString().slice(0,10)}.json`,JSON.stringify(backup,null,2),"application/json");elements.dataStatus.textContent="Private backup exported.";}
+function csvCell(v){return `"${String(v??"").replace(/"/g,'""')}"`;}
+function exportCsv(){const rows=state.journal.map(e=>[e.createdAt,e.food,e.meal,e.severity,e.delay,e.notes]);const csv=[["Date","Food or meal","Meal type","Symptom level","Symptom timing","Notes"],...rows].map(r=>r.map(csvCell).join(",")).join("\r\n");downloadFile(`low-acid-journal-${new Date().toISOString().slice(0,10)}.csv`,csv,"text/csv;charset=utf-8");elements.dataStatus.textContent="Journal CSV exported.";}
+async function importBackup(file){try{const backup=JSON.parse(await file.text());if(!backup||backup.app!=="Low-Acid Food Helper"||!backup.state)throw new Error("This is not a Low-Acid Food Helper backup.");if(!confirm("Replace the local app data on this device with this backup?"))return;state=normalizeState(backup.state);saveState();syncControls();renderFoodResults();renderJournal();elements.dataStatus.textContent="Backup restored.";}catch(error){elements.dataStatus.textContent=error.message||"The backup could not be restored.";}finally{elements.importFile.value="";}}
+function clearLocalData(){if(!confirm("Clear preferences, favorites, ratings, and journal entries from this device?"))return;state=cloneDefaultState();localStorage.removeItem(STORAGE_KEY);localStorage.removeItem("lowAcidPrefs");localStorage.removeItem("lowAcidLog");saveState();syncControls();renderFoodResults();renderJournal();elements.suggestionOutput.innerHTML='<p class="empty-state">Choose a mode, then tap <strong>Give me an idea</strong>.</p>';elements.dataStatus.textContent="Local app data cleared.";}
+function preferenceSummary(){const selected=[state.preferences.strict&&"extra-gentle",state.preferences.vegetarian&&"vegetarian",state.preferences.dairyFree&&"dairy-free",state.preferences.glutenFree&&"gluten-free",state.preferences.lowerFat&&"lower-fat"].filter(Boolean);return selected.length?selected.join(", "):"No food filters selected";}
+async function copyClinicianNote(){const recent=state.journal.slice(0,10),lines=["Low-Acid Food Helper summary",`Created: ${new Date().toLocaleString()}`,"","Preferences:",preferenceSummary(),"","Recent journal entries:",...(recent.length?recent.map(e=>`- ${formatDate(e.createdAt)} | ${e.food} | symptom ${e.severity}/5 | ${e.delay}${e.notes?` | ${e.notes}`:""}`):["- No journal entries"])];try{await navigator.clipboard.writeText(lines.join("\n"));elements.actionStatus.textContent="Clinician note copied to the clipboard.";}catch(_){elements.actionStatus.textContent="Clipboard access was unavailable.";}}
+async function shareApp(){const data={title:"Low-Acid Food Helper",text:"A private, no-account food and symptom helper.",url:window.location.href};try{if(navigator.share){await navigator.share(data);elements.actionStatus.textContent="Share sheet opened.";}else{await navigator.clipboard.writeText(window.location.href);elements.actionStatus.textContent="App link copied.";}}catch(error){if(error.name!=="AbortError")elements.actionStatus.textContent="Sharing was unavailable.";}}
+function populateFoodNames(){elements.foodNames.innerHTML=foods.map(f=>`<option value="${escapeHtml(f.name)}"></option>`).join("");}
+elements.modeButtons.addEventListener("click",event=>{const b=event.target.closest("[data-mode]");if(!b)return;state.mode=b.dataset.mode;syncControls();saveState();});
+elements.mealType.addEventListener("change",()=>{state.mealType=elements.mealType.value;saveState();});
+[elements.strict,elements.vegetarian,elements.dairyFree,elements.glutenFree,elements.lowerFat].forEach(x=>x.addEventListener("change",updatePreferences));
+$("suggestButton").addEventListener("click",suggestIdea);
+elements.foodSearch.addEventListener("input",()=>{showAllFoods=false;renderFoodResults();});
+elements.categoryFilter.addEventListener("change",()=>{showAllFoods=false;renderFoodResults();});
+elements.showMoreFoods.addEventListener("click",()=>{showAllFoods=true;renderFoodResults();});
+elements.foodResults.addEventListener("click",event=>{const b=event.target.closest("[data-action][data-food-id]");if(b)updateFoodPreference(b.dataset.foodId,b.dataset.action);});
+elements.favoriteSummary.addEventListener("click",event=>{const b=event.target.closest("[data-favorite-search]");if(!b)return;const food=foods.find(x=>x.id===b.dataset.favoriteSearch);if(!food)return;elements.foodSearch.value=food.name;elements.categoryFilter.value="all";renderFoodResults();elements.foodResults.scrollIntoView({behavior:"smooth",block:"start"});});
+elements.journalForm.addEventListener("submit",addJournalEntry);
+elements.journalEntries.addEventListener("click",event=>{const b=event.target.closest("[data-delete-entry]");if(b)deleteJournalEntry(b.dataset.deleteEntry);});
+$("exportJsonButton").addEventListener("click",exportBackup);$("exportCsvButton").addEventListener("click",exportCsv);$("importButton").addEventListener("click",()=>elements.importFile.click());elements.importFile.addEventListener("change",()=>{const [file]=elements.importFile.files;if(file)importBackup(file);});$("clearDataButton").addEventListener("click",clearLocalData);
+elements.textSize.addEventListener("change",()=>{state.preferences.textSize=elements.textSize.value;applyReadingSettings();saveState();});elements.highContrast.addEventListener("change",()=>{state.preferences.highContrast=elements.highContrast.checked;applyReadingSettings();saveState();});
+$("copyPromptButton").addEventListener("click",copyClinicianNote);$("shareButton").addEventListener("click",shareApp);$("installHelp").addEventListener("click",()=>{elements.setup.classList.toggle("hidden");if(!elements.setup.classList.contains("hidden"))elements.setup.scrollIntoView({behavior:"smooth",block:"start"});});
+syncControls();populateFoodNames();renderFoodResults();renderJournal();if("serviceWorker" in navigator)navigator.serviceWorker.register("./service-worker.js").catch(()=>{});
