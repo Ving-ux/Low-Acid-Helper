@@ -4,12 +4,15 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="theme-color" content="#eef7f1" />
+  <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-title" content="Low Acid" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="format-detection" content="telephone=no" />
   <title>Low-Acid Food Helper</title>
   <link rel="manifest" href="./manifest.webmanifest" />
-  <link rel="apple-touch-icon" href="./icons/icon-192.svg" />
+  <link rel="apple-touch-icon" sizes="180x180" href="./icons/apple-touch-icon.png" />
+  <link rel="icon" type="image/png" sizes="192x192" href="./icons/icon-192.png" />
   <link rel="stylesheet" href="./styles.css" />
 </head>
 <body>
@@ -90,12 +93,12 @@
     <section id="setupPanel" class="card setup-card hidden">
       <h2>iPhone setup</h2>
       <ol>
-        <li>Host this folder as a static website, for example GitHub Pages, Netlify, Cloudflare Pages, or any HTTPS host.</li>
-        <li>Open the link in Safari on your mom’s iPhone.</li>
+        <li>Publish this repository with GitHub Pages using the included workflow.</li>
+        <li>Open the GitHub Pages link in Safari on the iPhone.</li>
         <li>Tap <strong>Share</strong> → <strong>Add to Home Screen</strong>.</li>
         <li>Name it <strong>Low Acid</strong>.</li>
       </ol>
-      <p>For a no-hosting test, open <code>index.html</code> from Files, but Home Screen install works best from an HTTPS website.</p>
+      <p>Launch it from the Home Screen for the ful-screen app experience and offline support.</p>
     </section>
   </main>
   <script src="./app.js"></script>
