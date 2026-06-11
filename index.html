@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#eef7f1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-title" content="Low Acid" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <title>Low-Acid Food Helper</title>
+  <link rel="manifest" href="./manifest.webmanifest" />
+  <link rel="apple-touch-icon" href="./icons/icon-192.svg" />
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <main class="app-shell">
+    <header class="hero">
+      <div>
+        <p class="eyebrow">No API &bull; No account &bull; Works as a simple iPhone applet</p>
+        <h1>Low-Acid Food Helper</h1>
+        <p class="subtitle">Quick LPR-friendly food ideas for lunch, snacks, and grocery-store moments.</p>
+      </div>
+      <button id="installHelp" class="ghost-button" type="button">iPhone setup</button>
+    </header>
+
+    <section class="card warning-card" aria-label="medical disclaimer">
+      <strong>Heads up:</strong> This is practical food guidance, not medical advice. LPR triggers vary by person. Use your clinician’s plan if it differs.
+    </section>
+
+    <section class="card controls-card">
+      <label class="label" for="questionInput">Ask like you would in the store</label>
+      <div class="input-row">
+        <input id="questionInput" autocomplete="off" inputmode="text" placeholder="I’m at Publix. What can I buy for lunch?" />
+        <button id="askButton" type="button">Ask</button>
+      </div>
+
+      <div class="quick-row" aria-label="quick prompts">
+        <button class="chip" data-prompt="I’m at Publix. What can I buy for lunch?">Publix lunch</button>
+        <button class="chip" data-prompt="Give me 5 LPR-friendly snack ideas">Snacks</button>
+        <button class="chip" data-prompt="What about nuts?">Nuts?</button>
+        <button class="chip" data-prompt="What about pretzels?">Pretzels?</button>
+        <button class="chip" data-prompt="What should I avoid today?">Avoid list</button>
+      </div>
+
+      <details class="preferences">
+        <summary>Preferences</summary>
+        <div class="toggle-grid">
+          <label><input type="checkbox" id="strictMode" /> Strict flare-up mode</label>
+          <label><input type="checkbox" id="vegetarianMode" /> Vegetarian ideas</label>
+          <label><input type="checkbox" id="noDairyMode" /> Avoid dairy</label>
+        </div>
+      </details>
+    </section>
+
+    <section id="answerCard" class="card answer-card" aria-live="polite">
+      <div class="answer-header">
+        <h2>Try asking:</h2>
+      </div>
+      <ul class="starter-list">
+        <li>“I’m at Publix. What can I buy?”</li>
+        <li>“What about nuts?”</li>
+        <li>“Give me a boring but safe lunch.”</li>
+        <li>“Is yogurt okay for LPR?”</li>
+      </ul>
+    </section>
+
+    <section class="card ai-card">
+      <h2>Need a follow-up note?</h2>
+      <p>This applet can prepare a clean prompt and copy it to the clipboard. The app itself stays local and never sends it anywhere.</p>
+      <div class="button-row">
+        <button id="copyPromptButton" type="button">Copy follow-up prompt</button>
+      </div>
+      <p id="copyStatus" class="copy-status" role="status"></p>
+    </section>
+
+    <section class="card log-card">
+      <h2>Mini trigger log</h2>
+      <p>Save quick notes locally on this phone. Nothing is uploaded.</p>
+      <div class="input-row log-row">
+        <input id="logInput" placeholder="Example: pretzels were fine, almond butter caused throat burn" />
+        <button id="saveLogButton" type="button">Save</button>
+      </div>
+      <div class="button-row small-buttons">
+        <button id="showLogButton" class="secondary-button" type="button">Show log</button>
+        <button id="clearLogButton" class="danger-button" type="button">Clear</button>
+      </div>
+      <div id="logOutput" class="log-output"></div>
+    </section>
+
+    <section id="setupPanel" class="card setup-card hidden">
+      <h2>iPhone setup</h2>
+      <ol>
+        <li>Host this folder as a static website, for example GitHub Pages, Netlify, Cloudflare Pages, or any HTTPS host.</li>
+        <li>Open the link in Safari on your mom’s iPhone.</li>
+        <li>Tap <strong>Share</strong> → <strong>Add to Home Screen</strong>.</li>
+        <li>Name it <strong>Low Acid</strong>.</li>
+      </ol>
+      <p>For a no-hosting test, open <code>index.html</code> from Files, but Home Screen install works best from an HTTPS website.</p>
+    </section>
+  </main>
+  <script src="./app.js"></script>
+</body>
+</html>
