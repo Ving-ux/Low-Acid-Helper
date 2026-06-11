@@ -13,13 +13,13 @@ A fully static, no-API, iPhone-friendly progressive web app for quick LPR and lo
 
 ## GitHub Pages deployment
 
-The repository includes a GitHub Actions workflow that publishes the root as a static site whenever `main` changes.
+The repository includes a GitHub Actions workflow that publishes the root as a static site whenever `main` changes. GitHub Free supports this deployment while the repository is public.
 
 1. Open the repository's **Settings**.
 2. Select **Pages**.
 3. Under **Build and deployment**, set **Source** to **GitHub Actions**.
 4. Open the latest **Deploy static site to GitHub Pages** workflow run.
-5. Open `https://ving-ux.github.io/Low-Acid-Helper/` in Safari on the iPhone.
+5. Open the live site at `https://ving-ux.github.io/Low-Acid-Helper/` in Safari on the iPhone.
 6. Tap **Share**, then **Add to Home Screen**.
 
 Future updates to `main` deploy automatically. The included `.nojekyll` file tells GitHub Pages to serve the static files as-is.
